@@ -9,7 +9,7 @@ def connect_to_db():
         cursorclass=pymysql.cursors.DictCursor
     )
 
-def paginate_users(connection, page_size, offset):
+def paginate_users(page_size, offset):
     """Fetch a page of users from the database."""
     with connection.cursor() as cursor:
         query = "SELECT * FROM user_data LIMIT %s OFFSET %s"
