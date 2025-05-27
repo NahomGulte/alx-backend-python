@@ -30,7 +30,7 @@ def batch_processing():
                 if not rows:
                     break
                 for row in rows:
-                    yield row
+                    return row
     except pymysql.MySQLError as err:
         print("Fetch Error:", err)
         
