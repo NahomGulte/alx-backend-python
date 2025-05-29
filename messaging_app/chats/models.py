@@ -4,7 +4,7 @@ from django.db import models
 
 # Create your models here.
 
-class User(AbstractUser):
+class User(models.AbstractUser):
     first_name=models.CharField(max_length=15, blank=True, null=True)
     last_name=models.CharField(max_length=15, blank=True, null=True)
     user_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -14,13 +14,13 @@ class User(AbstractUser):
     password = models.CharField()
     
 
-class Conversation():
+class Conversation(models.Model):
     participants=models.CharField(max_length=15, blank=True, null=True)
     conversattion = models.CharField(max_length=100)
     conversation_id = models.CharField(editable=False, unique=True)
 
 
-class Message():
+class Message(models.Model):
     message_body = models.CharField()
     sent_at = models.DateTimeField(auto_now_add=True)
     created_at=models.DateTimeField(auto_now_add=True)
