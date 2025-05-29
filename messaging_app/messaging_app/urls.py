@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from rest_framework.routers import DefaultRouter
+from rest_framework.routers import NestedDefaultRouter
 from rest_framework.routers import api-auth
 urlpatterns = [
     path('admin/', admin.site.urls),
