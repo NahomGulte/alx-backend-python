@@ -28,7 +28,7 @@ class TestAccessNestedMap(unittest.TestCase):
        
 class TestGetJson(unittest.TestCase):
    @parameterized.expand([
-        (("example_true", "http://example.com", {"payload": True})),
+        ("example_true", "http://example.com", {"payload": True}),
         ("holberton_false", "http://holberton.io", {"payload": False}),
     ])
    @patch("utils.requests.get")
