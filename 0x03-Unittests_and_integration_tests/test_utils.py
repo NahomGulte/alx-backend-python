@@ -2,8 +2,10 @@
 
 import unittest
 from utils import access_nested_map
+from utils import get_json
 from parameterized import parameterized
-
+from unittest.mock import MagicMock
+from unittest.mock import patch
 class TestAccessNestedMap(unittest.TestCase):
 
     @parameterized.expand([
@@ -22,6 +24,17 @@ class TestAccessNestedMap(unittest.TestCase):
         with self.assertRaises(KeyError) as context:
             access_nested_map(nested_map, path)
         self.assertEqual(str(context.exception), f"'{missing_key}'")
+       
+       
+class TestGetJson(unittest.TestCase):
+   @parameterized.expand([
+        (("example_true", "http://example.com", {"payload": True})),
+        ("holberton_false", "http://holberton.io", {"payload": False}),
+    ])
+   @patch("requests.get")
+   def test_get_json(self, name, url, expected_payload, mock_get):
+        mock_get.return_value.json.return_value = expected_payload
+        self.assertEqual(get_json(url), expected_payload)
 
 if __name__ == '__main__':
     unittest.main()
