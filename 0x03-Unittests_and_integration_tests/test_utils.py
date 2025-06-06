@@ -32,9 +32,9 @@ class TestGetJson(unittest.TestCase):
         ("holberton_false", "http://holberton.io", {"payload": False}),
     ])
    @patch("requests.get")
-   def test_get_json(self, name, url, expected_payload, mock_get):
-        mock_get.return_value.json.return_value = expected_payload
-        self.assertEqual(get_json(url), expected_payload)
+   def test_get_json(self, name, url, test_payload, mock_get):
+        mock_get.return_value.json.return_value = test_payload
+        self.assertEqual(get_json(url), test_payload)
 
 if __name__ == '__main__':
     unittest.main()
