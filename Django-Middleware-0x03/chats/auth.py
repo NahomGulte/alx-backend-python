@@ -1,14 +1,16 @@
-# chats/auth.py
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 
-from rest_framework import permissions
-from .models import Conversation
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
 
-class IsParticipant(permissions.BasePermission):
-    """
-    Custom permission to allow only participants of a conversation to access it.
-    """
+        # Add custom claims
+        token['username'] = user.username
+        token['email'] = user.email
+        token['is_staff'] = user.is_staff
+        return token
 
-    def has_object_permission(self, request, view, obj):
-        if hasattr(obj, 'participants'):
-            return request.user in obj.participants.all()
-        return False
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer

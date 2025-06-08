@@ -1,50 +1,45 @@
-from rest_framework import permissions  
-from rest_framework.permissions import BasePermission, IsAuthenticated
-from .models import Conversation
+from rest_framework import permissions
+from .models import Conversation, Message
+from .serializers import ConversationSerializer, MessageSerializer
 
-
-class IsParticipant(BasePermission):
-    """
-    Allows access only to participants of the conversation.
-    Used for ConversationViewSet.
-    """
+class IsParticipant(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user in obj.participants.all()
 
 
-class IsParticipantOfConversation(BasePermission):
-    """
-    Custom permission that:
-    1. Only allows authenticated users (checks user.is_authenticated)
-    2. Only allows participants to access conversation/messages
-    3. Handles all methods (GET, POST, PUT, PATCH, DELETE)
-    """
+lass IsParticipantOfConversation(BasePermission):
     def has_permission(self, request, view):
-        if not request.user.is_authenticated:
-            return False
-        
-        if request.method == 'POST':
-            conversation_id = request.data.get('conversation')
-            if conversation_id:
-                return Conversation.objects.filter(
-                    id=conversation_id,
-                    participants=request.user
-                ).exists()
-            return True
-            
-        return True
+        return request.user and request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
-        if isinstance(obj, Conversation):
-            return obj.participants.filter(id=request.user.id).exists()
-        
-        if request.method in ['PUT', 'PATCH', 'DELETE']:
-            return obj.conversation.participants.filter(id=request.user.id).exists()
-        
-        return obj.conversation.participants.filter(id=request.user.id).exists()
+        user = request.user
 
+       
+        if request.method in SAFE_METHODS:
+            return user in obj.conversation.participants.all()
 
-class IsSenderOrParticipant(BasePermission):
-    """Check if user is sender or conversation participant"""
-    def has_object_permission(self, request, view, obj):
-        return (request.user == obj.sender) or (request.user in obj.conversation.participants.all())
+        
+        if request.method in ["PUT", "PATCH", "DELETE"]:
+            return obj.sender == user
+
+     
+        if request.method == "POST":
+            return user in obj.conversation.participants.all()
+
+        return False
+class ConversationViewSet(viewsets.ModelViewSet):
+    serializer_class = ConversationSerializer
+    permission_classes = [permissions.IsAuthenticated, IsParticipant]
+
+    def get_queryset(self):
+        return Conversation.objects.filter(participants=self.request.user)
+
+class MessageViewSet(viewsets.ModelViewSet):
+    serializer_class = MessageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Message.objects.filter(sender=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(sender=self.request.user)
