@@ -33,7 +33,9 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'chats',
     'rest_framework',
+    'rest_framework_simplejwt',
     'django.contrib.admin',
+    'rest_framework.authentication.BasicAuthentication',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
