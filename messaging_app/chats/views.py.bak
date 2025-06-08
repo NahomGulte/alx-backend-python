@@ -4,7 +4,8 @@ from .models import User
 from .models import Conversation
 from .models import Message
 from .serializers import ChatSerializer
-
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.status import HTTP_403_FORBIDDEN
 # Create your views here.
 
 class ConversationViewSet(viewsets.ModelViewSet):

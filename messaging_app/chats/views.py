@@ -21,3 +21,5 @@ class MessageViewSet(viewsets.ModelViewSet):
     filterset_fields = ['conversattion', 'participants']
     search_fields = ['content']
     ordering_fields = ['conversation_id']
+    def get_queryset(self):
+        return Message.objects.filter(conversation__participants=self.request.user)
