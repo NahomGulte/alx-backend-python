@@ -1,5 +1,7 @@
+from django.db.models.signals import post_delete
 from django.db.models.signals import post_save
 from django.db.models.signals import pre_save
+from django.contrib.auth.models import User
 from django.dispatch import receiver
 from .models import Message, Notification
 
@@ -11,11 +13,11 @@ def create_notification(sender, instance, created, **kwargs):
             message=instance
         )
 def log_message_edit(sender, instance, **kwargs):
-    if instance.pk:  # Editing existing message
+    if instance.pk:  
         try:
             original = Message.objects.get(pk=instance.pk)
             if original.content != instance.content:
-                # Save the previous version
+                
                 MessageHistory.objects.create(
                     message=original,
                     old_content=original.content
@@ -24,3 +26,9 @@ def log_message_edit(sender, instance, **kwargs):
         except Message.DoesNotExist:
             pass
 
+@receiver(post_delete, sender=User)
+def delete_user_related_data(sender, instance, **kwargs):
+    
+    Message.objects.filter(sender=instance).delete()
+    Message.objects.filter(receiver=instance).delete()
+    Notification.objects.filter(user=instance).delete()
