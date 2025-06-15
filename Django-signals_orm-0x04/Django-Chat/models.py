@@ -12,7 +12,7 @@ class Message(models.Model):
     def __str__(self):
         return f"Message {self.id} from {self.sender} to {self.receiver}"
 		
-class MessageHistory(models.Model):
+class edited(models.Model):
     message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name='history')
     old_content = models.TextField()
     edited_at = models.DateTimeField(auto_now_add=True)
