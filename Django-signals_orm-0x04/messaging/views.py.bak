@@ -4,7 +4,14 @@ from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from django.db.models import Prefetch
 from .models import Message
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 
+@login_required
+def inbox(request):
+    user = request.user
+    unread_messages = Message.unread.unread_for_user(user).only('id', 'sender', 'content', 'timestamp')
+    return render(request, 'inbox.html', {'unread_messages': unread_messages})
 def get_conversation(user):
     # Top-level messages (not replies)
     messages = Message.objects.filter(

@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import cache_page
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from django.contrib.auth.models import User
@@ -30,3 +31,10 @@ def delete_user(request):
     logout(request)  
     user.delete()
     return redirect('home')  
+    
+@cache_page(60)  
+@login_required
+def conversation_view(request):
+    user = request.user
+    messages = Message.objects.filter(receiver=user, parent_message__isnull=True).select_related('sender')
+    return render(request, 'conversation.html', {'messages': messages})
