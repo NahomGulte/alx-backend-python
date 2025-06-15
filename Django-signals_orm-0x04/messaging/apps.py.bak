@@ -1,8 +1,8 @@
 from django.apps import AppConfig
 
-class ChatAppConfig(AppConfig):  
+class ChatAppConfig(AppConfig):  # Replace with your actual app name
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'Django-Chat.Models'
 
     def ready(self):
-        import Django-Chat.Models.signals  
+        import Django-Chat.Models.signals  # Replace with your app name
