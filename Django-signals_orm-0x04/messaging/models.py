@@ -1,6 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+class MessageQuerySet(models.QuerySet):
+    def unread_for_user(self, user):
+        return self.filter(receiver=user, read=False)
+
+class UnreadMessagesManager(models.Manager):
+    def get_queryset(self):
+        return MessageQuerySet(self.model, using=self._db)
+
+    def unread_for_user(self, user):
+        return self.get_queryset().unread_for_user(user)
+
 class Message(models.Model):
     sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
@@ -11,7 +22,10 @@ class Message(models.Model):
     parent_message = models.ForeignKey(
         'self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE
     )
+    read = models.BooleanField(default=False)
 
+    objects = models.Manager()
+    unread = UnreadMessagesManager() 
     def __str__(self):
         return f"Message {self.id} from {self.sender} to {self.receiver}"
     def is_reply(self):

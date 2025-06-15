@@ -9,6 +9,7 @@ def get_conversation(user):
     # Top-level messages (not replies)
     messages = Message.objects.filter(
         receiver=user,
+        sender=request.user,
         parent_message__isnull=True
     ).select_related('sender').prefetch_related(
         Prefetch('replies', queryset=Message.objects.select_related('sender'))

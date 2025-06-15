@@ -8,9 +8,15 @@ class Message(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     edited = models.BooleanField(default=False) 
 
-    def __str__(self):
-        return f"From {self.sender} to {self.receiver} at {self.timestamp}"
+    parent_message = models.ForeignKey(
+        'self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE
+    )
 
+    def __str__(self):
+        return f"Message {self.id} from {self.sender} to {self.receiver}"
+    def is_reply(self):
+        return self.parent_message is not None
+        
 class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
     message = models.ForeignKey(Message, on_delete=models.CASCADE)
