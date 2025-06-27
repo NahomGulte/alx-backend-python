@@ -1,0 +1,10 @@
+version: '1.9'
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment
+services:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
