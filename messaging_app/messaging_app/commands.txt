@@ -1,0 +1,1 @@
+echo "$(minikube ip) myapp.local" | sudo tee -a /etc/hosts
