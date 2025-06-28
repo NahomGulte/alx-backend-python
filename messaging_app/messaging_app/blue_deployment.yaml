@@ -1,8 +1,19 @@
 version: '1.9'
 apiVersion: apps/v1
 kind: Deployment
-metadata:
-  name: deployment
+  metadata:
+  name: django-blue
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: django
+      version: blue
+  template:
+    metadata:
+      labels:
+        app: django
+        version: blue
 services:
   name: django-service
   ports:
