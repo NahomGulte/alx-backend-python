@@ -1,0 +1,8 @@
+#!/bin/bash
+kubectl apply -f blue_deployment.yaml
+kubectl apply -f green_deployment.yaml
+
+kubectl wait --for=condition=available deployment/django-green --timeout=60s
+
+green_pod=$(kubectl get pods -l app=django,version=green -o jsonpath="{.items[0].metadata.name}")
+kubectl logs "$green_pod"
