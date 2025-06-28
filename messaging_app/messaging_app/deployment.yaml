@@ -4,6 +4,7 @@ kind: Deployment
 metadata:
   name: deployment
 services:
+  name: django-service
   ports:
     - protocol: TCP
       port: 80
