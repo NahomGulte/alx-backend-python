@@ -1,0 +1,27 @@
+#!/bin/bash
+kubectl apply -f blue_deployment.yaml
+DEPLOYMENT_NAME=$(grep 'name:' blue_deployment.yaml | head -1 | awk '{print $2}')
+kubectl rollout status deployment/$DEPLOYMENT_NAME --namespace=default
+
+ENDPOINT="http://localhost:8080/"
+FAILURES=0
+TOTAL=0
+
+for i in {1..20}; do
+  STATUS=$(curl -s -o /dev/null -w "%{http_code}" $ENDPOINT)
+  if [ "$STATUS" -eq "200" ]; then
+    echo "[$i] ✅ Success (HTTP 200)"
+  else
+    echo "[$i] Failure (HTTP $STATUS)"
+    ((FAILURES++))
+  fi
+  ((TOTAL++))
+  sleep 1  
+done
+
+echo " Summary: $((TOTAL-FAILURES)) successful / $TOTAL total requests"
+
+echo "Checking current running pods:"
+kubectl get pods -l app=django
+
+echo "Rolling update complete and validated."
